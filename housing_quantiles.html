@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Carrois+Gothic+SC|Fjalla+One|Roboto" rel="stylesheet">
+    <title>2016 Affordable Housing Index Explorer</title>
+  </head>
+  <body>
+    <header id="c-global-header">
+      <div id="header-div">
+        <img src="noun_1109544_cc.svg" id="house-icon-1" style="color: gray">
+        <img src="noun_1109549_cc.svg" id="house-icon-2" style="color: gray">
+        <img src="condo-icon.svg" id="house-icon-3" style="color: gray">
+        <img src="condo-icon-2.svg" id="house-icon-4" style="color: gray">
+        <img src="fire-hydrant-2.svg" id="fire-hydrant" style="color: gray">
+        <img src="tree.svg" id="tree" style="color: gray">
+        <div id="title-div">
+          <h1>2016 Affordable Housing Index Explorer</h1>
+        </div>
+      </div>
+    </header>
+    <a name="linktoTop"></a>
+    <p id="snippet">Compare the housing and demographic characteristics of different census tracts to learn more about the Hawaii housing market.</p>
+
+<script src="https://d3js.org/d3.v5.js"></script>
+<script src="https://bl.ocks.org/syntagmatic/raw/3341641/render-queue.js"></script>
+<link rel="stylesheet" href="style.css"></link>
+<script>
+var margin = {top: 90, right: 130, bottom: 0, left: 160},
+    width = document.body.clientWidth - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom,
+    innerHeight = height - 2;
+
+var devicePixelRatio = window.devicePixelRatio || 1;
+
+var color = d3.scaleLinear()
+    .domain([0, 100])
+    .range(["teal", "blue"]);
+
+var types = {
+  "Number": {
+    key: "Number",
+    coerce: function(d) { return +d; },
+    extent: d3.extent,
+    within: function(d, extent, dim) { return extent[0] <= dim.scale(d) && dim.scale(d) <= extent[1]; },
+    defaultScale: d3.scaleLinear().range([innerHeight, 0])
+  },
+  "String": {
+    key: "String",
+    coerce: String,
+    extent: function (data) { return data.sort(); },
+    within: function(d, extent, dim) { return extent[0] <= dim.scale(d) && dim.scale(d) <= extent[1]; },
+    defaultScale: d3.scalePoint().range([0, innerHeight])
+  },
+  "Date": {
+    key: "Date",
+    coerce: function(d) { return new Date(d); },
+    extent: d3.extent,
+    within: function(d, extent, dim) { return extent[0] <= dim.scale(d) && dim.scale(d) <= extent[1]; },
+    defaultScale: d3.scaleTime().range([0, innerHeight])
+  }
+};
+
+var selectedDimension = "Median Home Value";
+var selectedRow = "";
+
+var dimensions = [
+  {
+    key: "Median Home Value",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Median Rent",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Home Vacancy Rate",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Rental Vacancy Rate",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Median Income",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Employment Rate",
+    type: types["Number"],
+    scale: d3.scaleLinear()
+              .range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Population with Higher Ed Degree",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  },
+  {
+    key: "Public Transportation",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0]),
+    // axis: d3.axisLeft()
+      // .tickFormat(function(d,i) {
+        // return d;
+      // })
+  },
+  {
+    key: "Average Commute Time",
+    type: types["Number"],
+    scale: d3.scaleLinear().range([innerHeight, 0])
+    // scale: d3.scaleSqrt().range([innerHeight, 0])
+  }
+];
+
+var HousingColumns = ["Tract Name", "Median Home Value ($)", "Median Rent ($)", "Home Vacancy Rate (%)", "Rental Vacancy Rate (%)"]
+var DemographicColumns = ["Tract Name", "Median Income ($)", "Employment Rate (%)", "Population with Higher Ed Degree (%)", "Public Transportation Users (%)", "Average Commute Time (minutes)"]
+
+var xscale = d3.scalePoint()
+    .domain(d3.range(dimensions.length))
+    .range([0, width]);
+
+var yAxis = d3.axisLeft();
+
+var container = d3.select("body").append("div")
+    .attr("class", "parcoords")
+    .style("width", width + margin.left + margin.right + "px")
+    .style("height", height + margin.top + margin.bottom + "px")
+    // .style("background-color", "#F5F5F5")
+    ;
+
+var svg = container.append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var canvas = container.append("canvas")
+    .attr("width", width * devicePixelRatio)
+    .attr("height", height * devicePixelRatio)
+    .style("width", width + "px")
+    .style("height", height + "px")
+    .style("margin-top", margin.top + "px")
+    .style("margin-left", margin.left + "px");
+
+var ctx = canvas.node().getContext("2d");
+ctx.globalCompositeOperation = 'darken';
+ctx.globalAlpha = 0.15;
+ctx.lineWidth = 1.5;
+ctx.scale(devicePixelRatio, devicePixelRatio);
+
+var axes = svg.selectAll(".axis")
+    .data(dimensions)
+  .enter().append("g")
+    .attr("class", function(d) { return "axis " + d.key.replace(/ /g, "_"); })
+    .attr("transform", function(d,i) { return "translate(" + xscale(i) + ")"; });
+
+d3.selectAll(axes).selectAll(".title")
+  .style("color", "#4D5B5C");
+
+d3.csv("d3_quantiles.csv").then(function(data) {
+
+  data.forEach(function(d) {
+    dimensions.forEach(function(p) {
+      d[p.key] = d[p.key] === "*" ? "*" : p.type.coerce(d[p.key]);
+    });
+    // truncate long text strings to fit in data table
+    for (var key in d) {
+      if (d[key] && d[key].length > 35) d[key] = d[key].slice(0,36);
+    }
+  });
+
+  function tabulate(data, columns, tableID) {
+    console.log("did I even call this function?", data);
+
+    let table = d3.select(tableID);
+    if (!table.node()) {
+      table = d3.select("body").append("table").classed(tableID, true);
+    }
+    if (!table.select("thead").node()) {
+      table.append("thead").append("tr")
+        .selectAll("th")
+        .data(columns)
+        .enter()
+        .append("th")
+        .attr("class", function(column) { return column; })
+        .text(function(column) { return column; })
+      table.append("tbody");
+    }
+    let tbody = d3.select(tableID + " tbody");
+
+    let rowsUpdate = tbody.selectAll("tr")
+      .data(data)
+
+    // enter selection
+    let rowsEnter = rowsUpdate
+      .enter()
+      .append("tr")
+
+    rowsUpdate.style("background-color", function(d) {
+        console.log(selectedRow, d.affgeoid);
+        if (d.affgeoid === selectedRow) {
+          return "#FFa62f";
+        }
+      })
+
+    // exit selection
+    rowsUpdate.exit().remove();
+
+    let cells = rowsUpdate.merge(rowsEnter).selectAll("td")
+      .data(function row(d) {
+        return columns.map(function(column) {
+          return {column: column, value: d[column]};
+        });
+      })
+
+    // update selection
+    cells.text(function(d) { return d.value; });
+
+    // enter selection
+    cells
+      .enter()
+      .append("td")
+      // .attr("style", "font-family: 'Roboto', sans-serif")
+      // .attr("style", "font-size: 12px")
+      .style("color", "#4D5B5C") // sets the font style
+      .text(function(d) { return d.value ; });
+
+    d3.selectAll("tr")
+      .on("click", function (d) {
+        console.log("this_row", d);
+        selectedTable = d.geo;
+        console.log("geo", d.geo);
+        selectedRow = d.affgeoid;
+        //select_line(this, d.affgeoid);
+        brush();
+      });
+  }
+
+  dimensions.forEach(function(dim) {
+    if (!("domain" in dim)) {
+      dim.domain = d3_functor(dim.type.extent)(data.map(function(d) { return d[dim.key]; }));
+    }
+    if (!("scale" in dim)) {
+      dim.scale = dim.type.defaultScale.copy();
+    }
+    dim.scale.domain(dim.domain);
+  });
+
+  var render = renderQueue(draw).rate(50);
+
+  ctx.clearRect(0,0,width,height);
+  ctx.globalAlpha = d3.min([0.85/Math.pow(data.length,0.3),1]);
+  render(data);
+
+  axes.append("g")
+    .each(function(d) {
+      var renderAxis = "axis" in d
+        ? d.axis.scale(d.scale)  // custom axis
+        : yAxis.scale(d.scale);  // default axis
+      d3.select(this).call(renderAxis);
+    })
+    .append("text")
+    .attr("class", "title")
+    .attr("text-anchor", "start")
+    .text(function(d) { return "description" in d ? d.description : d.key; });
+
+  // Add and store a brush for each axis.
+  axes.append("g")
+      .attr("class", "brush")
+      .each(function(d) {
+        d3.select(this).call(d.brush = d3.brushY()
+          .extent([[-10,0], [10,height]])
+          .on("start", brushstart)
+          .on("brush", brush)
+          .on("end", brush)
+        )
+      })
+    .selectAll("rect")
+      .attr("x", -8)
+      .attr("width", 16);
+
+  d3.selectAll(".axis .tick text")
+    .style("fill", color);
+
+  tabulate(data, HousingColumns, ".HousingTable");
+  tabulate(data, DemographicColumns, ".DemographicTable");
+
+  function project(d) {
+    return dimensions.map(function(p,i) {
+      if (
+        !(p.key in d) ||
+        d[p.key] === null
+      ) return null;
+
+      return [xscale(i),p.scale(d[p.key])];
+    });
+  };
+
+  function draw(d) {
+
+    let thisColor = color(d[selectedDimension]);
+    if (d.affgeoid === selectedRow) {
+      thisColor = "orange";
+    }
+
+    let thisWidth = 1.5;
+    if (d.affgeoid === selectedRow) {
+      thisWidth = 2;
+    }
+
+    let thisAlpha = 0.15;
+    if (d.affgeoid === selectedRow) {
+      thisAlpha = 1;
+    }
+
+    ctx.strokeStyle = thisColor;
+    ctx.lineWidth = thisWidth;
+    ctx.globalAlpha = thisAlpha;
+
+    console.log("color?", selectedDimension);
+
+    ctx.beginPath();
+    var coords = project(d);
+    coords.forEach(function(p,i) {
+      if (p === null) {
+        if (i > 0) {
+          var prev = coords[i-1];
+          if (prev !== null) {
+            ctx.moveTo(prev[0],prev[1]);
+            ctx.lineTo(prev[0]+6,prev[1]);
+          }
+        }
+        if (i < coords.length-1) {
+          var next = coords[i+1];
+          if (next !== null) {
+            ctx.moveTo(next[0]-6,next[1]);
+          }
+        }
+        return;
+      }
+
+      if (i == 0) {
+        ctx.moveTo(p[0],p[1]);
+        return;
+      }
+
+      ctx.lineTo(p[0],p[1]);
+    });
+    ctx.stroke();
+  }
+
+  function brushstart() {
+    d3.event.sourceEvent.stopPropagation();
+  }
+
+  function brush() {
+    console.log("brush called");
+    render.invalidate();
+
+    var actives = [];
+    svg.selectAll(".axis .brush")
+      .filter(function(d) {
+        return d3.brushSelection(this);
+      })
+      .each(function(d) {
+        actives.push({
+          dimension: d,
+          extent: d3.brushSelection(this)
+        });
+      });
+
+    var selected = data.filter(function(d) {
+      if (actives.every(function(active) {
+          var dim = active.dimension;
+          // test if point is within extents for each active brush
+          return dim.type.within(d[dim.key], active.extent, dim);
+        })) {
+        return true;
+      }
+    });
+    console.log("selected", selected);
+    // show ticks for active brush dimensions
+    // and filter ticks to only those within brush extents
+    /*
+    svg.selectAll(".axis")
+        .filter(function(d) {
+          return actives.indexOf(d) > -1 ? true : false;
+        })
+        .classed("active", true)
+        .each(function(dimension, i) {
+          var extent = extents[i];
+          d3.select(this)
+            .selectAll(".tick text")
+            .style("display", function(d) {
+              var value = dimension.type.coerce(d);
+              return dimension.type.within(value, extent, dimension) ? null : "none";
+            });
+        });
+
+    // reset dimensions without active brushes
+    svg.selectAll(".axis")
+        .filter(function(d) {
+          return actives.indexOf(d) > -1 ? false : true;
+        })
+        .classed("active", false)
+        .selectAll(".tick text")
+          .style("display", null);
+    */
+
+    ctx.clearRect(0,0,width,height);
+    ctx.globalAlpha = d3.min([0.85/Math.pow(selected.length,0.3),1]);
+    render(selected);
+
+    tabulate(selected, HousingColumns, ".HousingTable");
+    tabulate(selected, DemographicColumns, ".DemographicTable");
+  }
+
+  d3.selectAll(".axis .title").on("click", function (d) {
+    console.log("title d.key", JSON.stringify(d.key));
+    edge_clicked(this, d.key);
+    brush();
+  });
+
+  function edge_clicked(elem, dimension) {
+    selectedDimension = dimension;
+    console.log("selectedDimension", selectedDimension);
+    d3.selectAll("g").selectAll(".axis .title")
+      .classed("path--clicked", false);
+    d3.selectAll("g").selectAll("rect")
+      .classed("path--clicked", false);
+    var clicked = d3.select(elem);
+    clicked.classed("path--clicked", true);
+  }
+});
+
+function d3_functor(v) {
+  return typeof v === "function" ? v : function() { return v; };
+};
+</script>
+
+<div id="label-container">
+  <div class="housing-line">
+    <svg width="370" height="5">
+      <rect width="370" height="5" fill="#eee"></rect>
+    </svg>
+    <a href="#linktoHousingTable" class="line-text">Housing Characteristics</a>
+  </div>
+  <div class="index-line">
+    <svg width="487" height="5">
+      <rect width="487" height="5" fill="#eee"></rect>
+    </svg>
+    <a href="#linktoDemographicTable" class="line-text">Demographic Characteristics</a>
+  </div>
+</div>
+
+<div id="graph-instructions">
+   <h2 id="graph-header">How to use the 2016 Affordable Housing Index Explorer:</h2>
+   <div id="graph-intro">
+     <ul>
+       <li class="move-these">Click on the axis title to color the lines based on that measure</li>
+       <li class="move-these">Click on a row in the tables to highlight that census tract on the chart</li>
+       <li>Click and drag on one or more axes to select ranges of values</li>
+       <li>Click elsewhere on the same axis to reset selection</li>
+       <li>
+         <a href="#linktoDataNotes">Jump to Data Notes</a>
+       </li>
+
+     </ul>
+   </div>
+   <img src="Image-2.png" alt="Example Graph Screenshot" id="Screenshot">
+</div>
+
+<div id="index-info">
+  <h4 id="first-table-header">Housing Characteristics</h4>
+  <a name="linktoHousingTable"></a>
+  <div id="nav1" class="clearfix">
+    <a href="#linktoDemographicTable">Jump to Demographic Table</a>
+  </div>
+</div>
+<table class="HousingTable"></table>
+
+<h4 id="second-table-header">Demographic Characteristics</h4>
+<a name="linktoDemographicTable"></a>
+<div id="nav2" class="clearfix">
+  <a href="#linktoTop">Back to Top</a>
+</div>
+<table class="DemographicTable"></table>
+
+<div id="footer-div">
+  <div id="Data-Notes">
+    <a name="linktoDataNotes"></a>
+    <h5>Data Notes:</h5>
+    <p class="footer-link">All data is taken from the 2016 American Community Surveys <a href="https://www.census.gov/programs-surveys/acs/">https://www.census.gov/programs-surveys/acs/.</a></p>
+    <p class="footer">Index numbers displayed in the tables represent the percentile values for the given characteristic.
+        The values for Median Home Value, Median Rent, Median Income, and Average Commute Time are based on the spread of the median dollar value or average time in minutes for each census tract.
+        The values for Home Vacancy Rate, Rental Vacancy Rate, Unemployment Rate, Population with a Higher Ed Degree, and Public Transportation are based on the spread of the percentage of the population or percentage of homes/apartments in that census tract who share the given characteristic.
+        For example, South Kona is in the 19th percentile for Median Rent and the 66th percentile for Unemployment Rate. </p>
+        <p>* Data Unavailable</p>
+        <p><text x="0" y="115" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">House icons created by Tengwan</text><text x="0" y="120" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">from the Noun Project</text></p>
+        <p><text x="0" y="39" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">Fire hydrant created by myiconfinder</text><text x="0" y="44" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">from the Noun Project</text></p>
+        <p><text x="0" y="115" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">Tree icon created by Artem  Kovyazin</text><text x="0" y="120" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">from the Noun Project</text></p>
+  </div>
+  <div id="logo-div">
+    <img src="UHERO-Logo-with-Seal-on-white.jpg" alt="UHERO Logo" id="Logo">
+  </div>
+</div>
+</body>
+</html>

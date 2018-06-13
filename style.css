@@ -1,0 +1,523 @@
+/* header {
+  background-color: #c1dae2;
+} */
+header#c-global-header {
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+      margin-top: 0px;
+      margin-right: auto;
+      margin-bottom: 30px;
+      margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 130px;
+    width: 100%;
+    z-index: 2;
+    border-bottom: 3px solid #ccc;
+}
+header div#header-div {
+  display: grid;
+  width: 100%;
+  grid-template-rows: 130px;
+  grid-template-columns: 110px 25px 90px auto 80px 80px 65px;
+  text-align: center;
+}
+div#title-div {
+  grid-row: 1;
+  grid-column: 4;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  align-self: center;
+  width: 100%;
+}
+header h1 {
+  font-family: 'Fjalla One', sans-serif;
+  font-weight: bold;
+  font-size: 45px;
+  color: #1a6985;
+  vertical-align: middle;
+  width: 100%;
+  margin: 0;
+}
+img#house-icon-1 {
+  align-self: center;
+  grid-column: 3;
+  grid-row: 1;
+  width: 110px;
+  height: 120px;
+  position: relative;
+  bottom: -2px;
+  color: gray;
+}
+img#house-icon-2 {
+  align-self: center;
+  grid-column: 5;
+  grid-row: 1;
+  width: 110px;
+  height: 120px;
+  position: relative;
+  bottom: -3px;
+  left: -6px;
+  color: gray;
+}
+img#house-icon-3 {
+  align-self: center;
+  grid-row: 1;
+  grid-column: 1;
+  width: 120px;
+  height: 130px;
+  color: gray;
+}
+img#house-icon-4 {
+  align-self: center;
+  grid-row: 1;
+  grid-column: 6;
+  width: 120px;
+  height: 130px;
+  position: relative;
+  bottom: -2px;
+  left: -4px;
+  color: gray;
+}
+img#fire-hydrant {
+  align-self: center;
+  grid-row: 1;
+  grid-column: 2;
+  width: 40px;
+  height: 60px;
+  position: relative;
+  bottom: -6px;
+  color: gray;
+}
+img#tree {
+  align-self: center;
+  grid-row: 1;
+  grid-column: 7;
+  width: 80px;
+  height: 80px;
+  position: relative;
+  bottom: -6px;
+  color: gray;
+}
+
+#snippet {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #4D5B5C;
+  width: 100%;
+  text-align: center;
+}
+
+div#logo-div {
+  position: relative;
+  float: right;
+  width: 140px;
+  height: 110px;
+  right: 15px;
+  top: -110px;
+}
+img#Logo {
+  width: 140px;
+  height: 110px;
+  right: 0px;
+  top: 0px;
+  /* border: 5px solid #1a6985; */
+}
+
+div.linktoDataNotes {
+  width: 974px;
+  height: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  color: gray;
+  margin-top: 5px;
+}
+#graph-instructions {
+  height: 195px;
+  width: 890px;
+  margin-top: 15px;
+  left: 17px;
+  border: 1px solid #ccc;
+  position: relative;
+  align-items: center;
+}
+h2#graph-header {
+  position: relative;
+  top: 5px;
+  left: 42px;
+  float: left;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #4D5B5C;
+  margin-bottom: 0;
+}
+#graph-intro {
+  position: relative;
+  left: -150px;
+  top: 25px;
+  width: 500px;
+  height: 148px;
+  /* border: 1px solid #ccc; */
+  text-align: left;
+  margin-top: 20px;
+}
+ul {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  color: #4D5B5C;
+  list-style-type: circle;
+  text-align: left;
+  margin: 0;
+}
+li {
+  margin-bottom: 8px;
+  left: 10px;
+  padding: 0;
+  width: 500px;
+  list-style-type: circle;
+  float: left;
+}
+img#Screenshot {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  float: right;
+  top: -165px;
+  right: 20px;
+}
+
+
+div#index-info {
+  width: auto;
+  height: 165px;
+}
+h4#first-table-header {
+  position: relative;
+  font-family: 'Fjalla One', sans-serif;
+  /* font-family: 'Carrois Gothic SC', sans-serif; */
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  color: #1a6985;
+  height: 50px;
+  margin-bottom: 0;
+  margin-top: 0;
+  top: -100px;
+  clear: both;
+}
+h4#second-table-header {
+  position: relative;
+  font-family: 'Fjalla One', sans-serif;
+  /* font-family: 'Carrois Gothic SC', sans-serif; */
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  color: #1a6985;
+  height: 50px;
+  margin-bottom: 0;
+  margin-top: 40px;
+  clear: both;
+}
+div#index-intro {
+  position: relative;
+  width: 700px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+  top: -120px;
+  /* border: 1px solid #ccc; */
+}
+text#index-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: #4D5B5C;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+}
+
+
+body {
+  min-width: 760px;
+}
+canvas {
+  margin-left: 50%;
+  margin-right: 50%;
+}
+table{
+  table-layout: fixed;
+  margin: auto;
+  width: 50%;
+  border-collapse: collapse;
+}
+div {
+  margin: auto;
+  width: 50%;
+}
+
+
+.parcoords {
+  display: block;
+}
+.parcoords svg,
+.parcoords canvas {
+  font-family: 'Roboto', sans-serif;
+  font-size: 10px;
+  position: absolute;
+}
+.parcoords canvas {
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.axis .title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  transform: rotate(-21deg) translate(-5px,-6px);
+  fill: #4D5B5C;
+}
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1px;
+}
+.axis .tick text {
+  fill: #222;
+  opacity: 0;
+  pointer-events: none;
+}
+.axis.manufac_name .tick text,
+.axis.food_group .tick text {
+  opacity: 1;
+}
+.axis:hover line,
+.axis:hover path,
+.axis.active line,
+.axis.active path {
+  fill: none;
+  stroke: #222;
+  stroke-width: 1px;
+}
+.axis:hover .title {
+  font-weight: bold;
+}
+.axis:hover .tick text {
+  opacity: 1;
+}
+.axis.active .title {
+  font-weight: normal;
+}
+.axis.active .tick text {
+  opacity: 1;
+  font-weight: bold;
+}
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+div#label-container {
+  width: 974px;
+  height: 50px;
+  margin-left: 160px;
+}
+div.housing-line {
+  position: relative;
+  width: 370px;
+  height: 50px;
+  text-align: center;
+  float: left;
+}
+div.index-line {
+  position: relative;
+  width: 487px;
+  height: 50px;
+  text-align: center;
+  float: right;
+}
+a.line-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: gray;
+  text-decoration: none
+}
+
+a.line-text:hover {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: gray;
+  text-decoration: underline
+}
+
+th {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: gray;
+  font-weight: bold;
+}
+tbody {
+  border-top: 2px solid gray;
+}
+td {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+}
+tr:nth-of-type(odd) {
+    background: #eee
+}
+tr:nth-of-type(even) {
+    background: white;
+}
+thead tr {
+  border-bottom: 2px solid gray;
+}
+thead tr th {
+  background: white;
+}
+
+.Tract.Name {
+  width: 200px;
+  height: 50px;
+}
+.Median.Home.Value.($) {
+  width: 100px;
+  height: 50px;
+}
+.Median.Rent.($) {
+  width: 100px;
+  height: 50px;
+}
+.Median.Income.($) {
+  width: 120px;
+  height: 50px;
+}
+.Employment.Rate.(%) {
+  width: 120px;
+  height: 50px;
+}
+.Home.Vacancy.Rate.(%) {
+  width: 100px;
+  height: 50px;
+}
+.Rental.Vacancy.Rate.(%) {
+  width: 100px;
+  height: 50px;
+}
+.Population.with.Higher.Ed.Degree.(%) {
+  width: 120px;
+  height: 50px;
+}
+.Public.Transportation.Users.(%) {
+  width: 120px;
+  height: 50px;
+}
+.Average.Commute.Time.(minutes) {
+  width: 120px;
+  height: 50px;
+}
+.DemographicTable {
+  width: 800px;
+}
+
+.path--clicked {
+  fill: none;
+  stroke: orange;
+  stroke-width: .5px;
+  cursor: pointer;
+}
+/* .row--clicked {
+  fill: yellow;
+  stroke: yellow;
+  stroke-width: 1px;
+  cursor: pointer;
+} */
+
+
+#nav1 {
+ position: relative;
+ font-family: 'Roboto', sans-serif;
+ font-size: 14px;
+ font-weight: normal;
+ background: none;
+ text-align: center;
+ line-height: 30px;
+ height: 30px;
+ width: 200px;
+ margin-top: 0px;
+ margin-bottom: 10px;
+ bottom: 90px;
+}
+#nav2 {
+ position: relative;
+ font-family: 'Roboto', sans-serif;
+ font-size: 14px;
+ font-weight: normal;
+ background: none;
+ text-align: center;
+ line-height: 30px;
+ height: 30px;
+ width: 200px;
+ margin-top: 0px;
+ margin-bottom: 10px;
+}
+
+#nav1 a {
+ position: relative;
+ background: none;
+ color: #4D5051;
+ height: 30px;
+ width: 200px;
+ text-decoration: underline;
+ -webkit-transition: all 0.5s ease;
+ margin-top: 10px;
+}
+#nav2 a {
+ position: relative;
+ background: none;
+ color: #4D5051;
+ height: 30px;
+ width: 200px;
+ text-decoration: underline;
+ -webkit-transition: all 0.5s ease;
+ margin-top: 10px;
+}
+
+#nav1 a:hover {
+ color: #6fcbf3;
+}
+#nav2 a:hover {
+ color: #6fcbf3;
+}
+
+div#footer-div {
+  width: 100%;
+  position: relative;
+  border-top: 3px solid #ccc;
+  bottom: -90px;
+}
+div#Data-Notes {
+  position: relative;
+  left: -70px;
+  top: -4px;
+  width: 85%;
+}
+h5 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: gray;
+  font-weight: bold;
+}
+p {
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  color: gray;
+}
