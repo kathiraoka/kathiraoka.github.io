@@ -324,9 +324,12 @@ div {
 }
 
 div#label-container {
-  width: 974px;
+  /* width: 974px;
   height: 50px;
-  margin-left: 160px;
+  margin-left: 160px; */
+  margin-left: 50%;
+  margin-right: 50%;
+  margin-bottom: 60px;
 }
 div.housing-line {
   position: relative;
@@ -489,12 +492,20 @@ thead tr th {
  -webkit-transition: all 0.5s ease;
  margin-top: 10px;
 }
+#nav3 a {
+  color: #4D5B5C;
+  text-decoration: underline;
+  -webkit-transition: all 0.5s ease;
+}
 
 #nav1 a:hover {
  color: #6fcbf3;
 }
 #nav2 a:hover {
  color: #6fcbf3;
+}
+#nav3 a:hover {
+  color: #6fcbf3;
 }
 
 div#footer-div {
